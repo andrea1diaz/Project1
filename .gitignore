@@ -1,0 +1,11 @@
+.DS_Store
+
+build/
+
+.idea/
+
+cmake-build-debug/
+CMakeFiles/
+conda/
+
+*.swp

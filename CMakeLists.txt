@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
-project(databases C CXX)
+project(db C CXX)
 
 # - conda environment -----------------------------------------------------------------------------
 if ("$ENV{CONDA_BUILD}" STREQUAL "1")
@@ -105,7 +105,7 @@ endfunction ()
 
 blazingdb_artifact (
         TARGET
-            btree
+            hash
 
         INCLUDES PUBLIC 
             $ENV{CONDA_PREFIX}/include
@@ -117,12 +117,15 @@ blazingdb_artifact (
           fmt::fmt
 
         PREFIX
-          databases
+          db
 
         SOURCES
           src/pagemanager.cpp
+          src/bucket.cpp
+          src/bufferfile.cpp
+          src/lengthfieldbuffer.cpp
 
         TESTS
-          tests/btree_test.cpp
+          tests/hash_test.cpp
 
 )

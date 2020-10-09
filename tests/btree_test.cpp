@@ -27,7 +27,7 @@ using namespace std;
 struct DiskBasedBtree : public ::testing::Test
 {
 };
-using namespace utec::disk;
+using namespace db::disk;
 
 TEST_F(DiskBasedBtree, IndexingRandomElements) {
   bool trunc_file = true;

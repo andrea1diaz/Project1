@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-namespace utec {
+namespace db {
 namespace disk {
 
 class pagemanager : protected std::fstream {
@@ -56,4 +56,4 @@ private:
   long page_id_count;
 };
 } // namespace disk
-} // namespace utec
+} // namespace databases

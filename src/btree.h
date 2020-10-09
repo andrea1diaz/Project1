@@ -4,7 +4,7 @@
 #include <optional>
 #include <memory>
 
-namespace utec {
+namespace db {
 namespace disk {
 
 	enum state {
@@ -548,4 +548,4 @@ public:
   }
 };
 } // namespace disk
-}
+} // namespace db

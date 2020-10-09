@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-namespace utec {
+namespace db {
 namespace disk {
 
 pagemanager::pagemanager(std::string file_name, bool trunc)
@@ -23,4 +23,4 @@ pagemanager::pagemanager(std::string file_name, bool trunc)
 pagemanager::~pagemanager() { close(); }
 
 } // namespace disk
-} // namespace utec
+} // namespace db

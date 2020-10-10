@@ -6,8 +6,6 @@
 #include "extendible-hashing.cpp"
 
 namespace db {
-
-
 bucket::bucket(db::Hashing &dir, int size) : num_keys (0), keys (0), rec_addr (0), dir(dir) {
     this->unique = unique != 0;
     bucket_addr = 0;
@@ -243,6 +241,17 @@ int bucket::make_addr (char *key, int levels) {
     }
 
     return addr;
+}
+
+std::ostream &bucket::print(std::ostream &stream) {
+    stream << "Bucket levels: " << levels << std::endl;
+    stream << "Text Index max keys: " << max_keys << " present keys " << num_keys << std::endl;
+
+    for (int i = 0; i < num_keys; ++i) {
+        stream << "\tKey[" << i << "] = " << keys[i] << " " << rec_addr[i] << std::endl;
+    }
+
+    return stream;
 }
 
 bucket_buffer::bucket_buffer(int k_size, int size) {

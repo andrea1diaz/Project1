@@ -22,6 +22,7 @@ protected:
     int check_combine ();
     int make_addr (char *key, int levels);
     int hash (char *key);
+    std::ostream &print (std::ostream &stream);
 
     int max_keys;
     int num_keys;

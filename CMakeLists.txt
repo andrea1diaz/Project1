@@ -123,10 +123,11 @@ blazingdb_artifact (
           src/pagemanager.cpp
           src/bucket.cpp
           src/bufferfile.cpp
+          src/bufferfilebucket.cpp
           src/lengthfieldbuffer.cpp
 
         TESTS
           tests/btree_test.cpp
-					tests/hash_test.cpp
+          tests/hash_test.cpp
 
 )

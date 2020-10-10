@@ -15,6 +15,7 @@ Hashing::Hashing (int size) {
     dir_buffer = new file::length_field_buffer;
     dir_file = new file::buffer_file(*dir_buffer);
     current_bucket = new db::bucket(*this, size);
+    print_bucket = new db::bucket(*this, size);
     bkt_buffer = new db::bucket_buffer (12, size);
     bucket_file = new file::buffer_file_bucket(*bkt_buffer);
 }
@@ -22,8 +23,6 @@ Hashing::Hashing (int size) {
 Hashing::~Hashing() {
     close();
 }
-
-
 
 
 void make_names (char *name, char *&dir_name, char *&bucket_name) {
@@ -68,7 +67,11 @@ int Hashing::create(char *name) {
 
     if (!result) return 0;
 
-    bucket_addr[0] = store_bucket(current_bucket);
+    result = bucket_file->create(bucket_name);
+
+    if (!result) return 0;
+
+    bucket_addr[0] = store_bucket(current_bucket);;
 
     return result;
 }
@@ -121,8 +124,19 @@ int Hashing::hash (char *key) {
     return sum;
 }
 
-std::ostream &Hashing::print(std::ostream stream) {
+std::ostream &Hashing::print(std::ostream &stream) {
+    stream << "hash levels " << levels << " size " << num_entries << std::endl;
 
+    for (int i = 0; i < num_entries; ++i) {
+        stream << "bucket " << bucket_addr[i] << " addr " << (void *)i << std::endl;
+
+        load_bucket(print_bucket, bucket_addr[i]);
+        print_bucket->print(stream);
+    }
+
+    stream << "end" << std::endl;
+
+    return stream;
 }
 
 int Hashing::make_addr (char *key, int levels) {
@@ -273,4 +287,5 @@ int Hashing::unpack() {
 
     return 0;
 }
+
 }

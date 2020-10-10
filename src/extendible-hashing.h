@@ -2,6 +2,7 @@
 
 #include "lengthfieldbuffer.h"
 #include <bufferfile.h>
+#include <bufferfilebucket.h>
 
 namespace db {
 class bucket;
@@ -20,7 +21,7 @@ public:
     int search (char *key);
     int make_addr (char *key, int levels);
     int hash (char *key);
-    std::ostream &print (std::ostream stream);
+    std::ostream &print (std::ostream &stream);
 
 protected:
     int max_keys;
@@ -39,6 +40,7 @@ protected:
     int unpack ();
 
     db::bucket *current_bucket;
+    db::bucket *print_bucket;
     db::bucket_buffer *bkt_buffer;
     file::buffer_file *dir_file;
     file::buffer_file_bucket *bucket_file;

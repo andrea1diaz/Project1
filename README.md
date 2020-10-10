@@ -1,7 +1,8 @@
 btree-project-cmake
 ==========================
-This project is a C++ template project with cmake.
+This project uses a  C++ template project with cmake.
 
+The outputfiles of the indexing are placed in `cmake-build-debug/`
 
 Requirements
 -------------
@@ -30,7 +31,18 @@ conda install -c hi2p-perim fmt
 ```
 
 Note for osx:
-` brew install fmt`
+` brew install fmt` and change in CMakeList.txt line 94 & 95 
+```
+$ENV{CONDA_PREFIX}/lib/libgmock_main.so
+$ENV{CONDA_PREFIX}/lib/libgmock.so )
+```
+
+it should be 
+```
+$ENV{CONDA_PREFIX}/lib/libgmock_main.a
+$ENV{CONDA_PREFIX}/lib/libgmock.a )
+
+```
 
 
 Build process

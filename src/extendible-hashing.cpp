@@ -12,7 +12,11 @@ Hashing::Hashing (int size) {
     num_entries = 1;
     bucket_addr = new int [num_entries];
     max_keys = size;
-
+    dir_buffer = new file::length_field_buffer;
+    dir_file = new file::buffer_file(*dir_buffer);
+    current_bucket = new db::bucket(*this, size);
+    bkt_buffer = new db::bucket_buffer (12, size);
+    bucket_file = new file::buffer_file_bucket(*bkt_buffer);
 }
 
 Hashing::~Hashing() {
@@ -115,6 +119,10 @@ int Hashing::hash (char *key) {
     }
 
     return sum;
+}
+
+std::ostream &Hashing::print(std::ostream stream) {
+
 }
 
 int Hashing::make_addr (char *key, int levels) {

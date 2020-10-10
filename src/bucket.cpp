@@ -1,10 +1,12 @@
 #include <bucket.h>
-
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
 #include <string.h>
 #include "extendible-hashing.cpp"
 
 namespace db {
+
 
 bucket::bucket(db::Hashing &dir, int size) : num_keys (0), keys (0), rec_addr (0), dir(dir) {
     this->unique = unique != 0;
@@ -120,7 +122,7 @@ int bucket::search (const char *key) {
 }
 
 int bucket::redistribute(bucket &new_bucket) {
-    for (int i = num_keys - 1; i >= 0; ++i) {
+    for (int i = num_keys - 1; i >= 0; --i) {
         int bucket_addr = dir.find(keys[i]);
 
         if (bucket_addr != this->bucket_addr) {
@@ -248,14 +250,13 @@ bucket_buffer::bucket_buffer(int k_size, int size) {
     int field_max = 1 + 2 * size + 1;
     int max_b = sizeof(int) + size * k_size * sizeof(int) + sizeof(int);
 
-    clear();
-
     if (field_max < 0) this->field_max = 0;
     else this->field_max = field_max;
 
     field_size = new int[field_max];
     buffer_size_max = max_b;
     buffer_size = 0;
+    buffer = new char[buffer_size_max];
     field_num = 0;
     this->k_size = k_size;
     this->k_max = size;
@@ -268,6 +269,8 @@ bucket_buffer::bucket_buffer(int k_size, int size) {
     }
 
     dummy = new char[k_size + 1];
+
+    clear();
 }
 
 void bucket_buffer::clear() {
@@ -276,6 +279,67 @@ void bucket_buffer::clear() {
     buffer[0] = 0;
     packing = true;
 }
+
+
+    int bucket_buffer::read(std::fstream &stream) {
+        if (stream.eof()) return -1;
+
+        int addr = stream.tellg();
+        unsigned short bff_size;
+
+        clear();
+
+        stream.read((char *) &bff_size, sizeof(bff_size));
+
+        if (!stream.good()) {
+            stream.clear();
+            return -1;
+        }
+
+        buffer_size = bff_size;
+
+        if (buffer_size > buffer_size_max) return -1;
+
+        stream.read(buffer, buffer_size);
+
+        if (!stream.good()) {
+            stream.clear();
+            return -1;
+        }
+
+        return addr;
+    }
+
+    int bucket_buffer::dread(std::fstream &stream, int addr) {
+        stream.seekg(addr, std::ios::beg);
+
+        if (stream.tellp() != addr) return -1;
+
+        return read(stream);
+    }
+
+    int bucket_buffer::write(std::fstream &stream) {
+        int addr = stream.tellp();
+        unsigned short bff_size = buffer_size;
+
+        stream.write((char *) &bff_size, sizeof(bff_size));
+
+        if (!stream) return -1;
+
+        stream.write(buffer, buffer_size);
+
+        if (!stream.good()) return -1;
+
+        return addr;
+    }
+
+    int bucket_buffer::dwrite(std::fstream &stream, int addr) {
+        stream.seekg(addr, std::ios::beg);
+
+        if (stream.tellp() != addr) return -1;
+
+        return write(stream);
+    }
 
 int bucket_buffer::add_field(int field_size) {
     initialized = 1;
@@ -364,5 +428,53 @@ int bucket_buffer::unpack(void *field, int sz) {
 
     return pack_size;
 }
+
+    static const char *header_str_b = "BucketBuffer";
+    static const int header_size_b = strlen(header_str_b);
+    const char *header_str = "Bucket";
+    const int header_size = strlen(header_str);
+
+
+    int bucket_buffer::read_header(std::fstream &stream) {
+        int result;
+        char str[header_size + 1];
+        char str_s[header_size_b + 1];
+
+        stream.seekg(0, std::ios::beg);
+        stream.read(str_s, header_size_b);
+
+        if (!stream.good()) result = -1;
+
+        if (strncmp(str_s, header_str_b, header_size_b) == 0) result = header_size_b;
+        else result = -1;
+
+        if (!result) return 0;
+
+        stream.read(str, header_size);
+
+        if (!stream.good()) return false;
+
+        if (strncmp(str, header_str, header_size) != 0) return 0;
+
+        return stream.tellg();
+    }
+
+    int bucket_buffer::write_header(std::fstream &stream) {
+        int result;
+
+        stream.seekg(0, std::ios::beg);
+        stream.write(header_str_b, header_size_b);
+
+        if (!stream.good()) result = -1;
+        else result = header_size_b;
+
+        if (!result) return 0;
+
+        stream.write(header_str, header_size);
+
+        if (!stream.good()) return 0;
+
+        return stream.tellp();
+    }
 
 }

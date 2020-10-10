@@ -24,13 +24,12 @@ TEST_F(HashingTest, First) {
     int keys_num = 5;
 
     for (int i = 0; i < keys_num; ++i) {
-        hs.hash(keys[i]);
-        hs.make_addr(keys[i], 6);
+        std::cout << keys[i] << " " << (void *) hs.hash(keys[i]) << " " << (void *)hs.make_addr(keys[i], 6) << std::endl;
 
         result = hs.insert(keys[i], 100 + i);
 
         if (result == 0) return;
+        //hs.print(std::cout)
     }
 
-    return;
 }

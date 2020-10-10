@@ -20,6 +20,7 @@ public:
     int search (char *key);
     int make_addr (char *key, int levels);
     int hash (char *key);
+    std::ostream &print (std::ostream stream);
 
 protected:
     int max_keys;
@@ -40,7 +41,7 @@ protected:
     db::bucket *current_bucket;
     db::bucket_buffer *bkt_buffer;
     file::buffer_file *dir_file;
-    file::buffer_file *bucket_file;
+    file::buffer_file_bucket *bucket_file;
     file::length_field_buffer *dir_buffer;
 
     friend class bucket;

@@ -126,6 +126,7 @@ blazingdb_artifact (
           src/lengthfieldbuffer.cpp
 
         TESTS
-          tests/hash_test.cpp
+          tests/btree_test.cpp
+					tests/hash_test.cpp
 
 )

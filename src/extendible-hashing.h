@@ -3,6 +3,7 @@
 #include "lengthfieldbuffer.h"
 #include <bufferfile.h>
 #include <bufferfilebucket.h>
+#include <bucketbuffer.h>
 
 #include <vector>
 #include <ncurses.h>

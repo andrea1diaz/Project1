@@ -1,5 +1,6 @@
 #include "extendible-hashing.h"
 #include "bucket.h"
+#include "bucketbuffer.h"
 
 #include <iostream>
 #include <vector>
@@ -10,6 +11,7 @@
 
 namespace db {
 
+// default constructor
 Hashing::Hashing (int size) {
     levels = 0;
     num_entries = 1;
@@ -24,6 +26,7 @@ Hashing::Hashing (int size) {
     bucket_file = new file::buffer_file_bucket(*bkt_buffer);
 }
 
+// calls close function to save all the data in the .dir file
 Hashing::~Hashing() {
     close();
 }

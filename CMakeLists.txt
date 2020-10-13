@@ -124,6 +124,7 @@ blazingdb_artifact (
         SOURCES
           src/pagemanager.cpp
           src/bucket.cpp
+					src/bucketbuffer.cpp
           src/bufferfile.cpp
           src/bufferfilebucket.cpp
           src/lengthfieldbuffer.cpp

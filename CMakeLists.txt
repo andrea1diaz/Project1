@@ -12,6 +12,7 @@ elseif (DEFINED ENV{CONDA_PREFIX})
     message(STATUS "Conda environment detected, CMAKE_SYSTEM_PREFIX_PATH set to: ${CMAKE_SYSTEM_PREFIX_PATH}")
 endif ()
 set(CMAKE_CXX_STANDARD 17)
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -lncurses -ltinfo")
 
 include(FeatureSummary)
 include(CheckIncludeFiles)
@@ -22,6 +23,7 @@ find_package(Threads)
 find_package(GTest REQUIRED)
 find_package(fmt REQUIRED)
 enable_testing ()
+
 
 include_directories(
     $ENV{PROJECT_SOURCE_DIR}/include
@@ -88,7 +90,7 @@ function (blazingdb_artifact)
     add_executable (${ARG_TARGET}-gtest ${ARG_TESTS})
     target_include_directories (${ARG_TARGET} PUBLIC src)
     target_compile_options (${ARG_TARGET} PUBLIC -ggdb -O0)
-    target_link_libraries (${ARG_TARGET}-gtest 
+    target_link_libraries (${ARG_TARGET}-gtest
         ${ARG_TARGET}
         GTest::GTest
         $ENV{CONDA_PREFIX}/lib/libgmock_main.a
@@ -125,6 +127,7 @@ blazingdb_artifact (
           src/bufferfile.cpp
           src/bufferfilebucket.cpp
           src/lengthfieldbuffer.cpp
+					src/ui.cpp
 
         TESTS
           tests/btree_test.cpp

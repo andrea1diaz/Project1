@@ -4,6 +4,10 @@
 #include <bufferfile.h>
 #include <bufferfilebucket.h>
 
+#include <vector>
+#include <ncurses.h>
+#include <curses.h>
+
 namespace db {
 class bucket;
 class bucket_buffer;
@@ -19,15 +23,21 @@ public:
     int insert (char *key, int addr);
     int remove (char *key);
     int search (char *key);
+    int get_indexed_files_names ();
+    std::vector<char *> get_indexed_files ();
     int make_addr (char *key, int levels);
     int hash (char *key);
     std::ostream &print (std::ostream &stream);
+		void get_data (WINDOW *wnd);
+    void get_data ();
 
 protected:
     int max_keys;
     int levels;
     int num_entries;
     int *bucket_addr;
+    char *file_name;
+    std::vector<char *> indexed_files;
 
     int double_size ();
     int collapse ();

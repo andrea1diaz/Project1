@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <ncurses.h>
+#include <curses.h>
 
 namespace db {
 class Hashing;
@@ -23,6 +25,8 @@ protected:
     int make_addr (char *key, int levels);
     int hash (char *key);
     std::ostream &print (std::ostream &stream);
+		void get_data (WINDOW *wnd);
+    void get_data ();
 
     int max_keys;
     int num_keys;
@@ -64,6 +68,7 @@ protected:
     int buffer_size_max;
     int k_max;
     int k_size;
+    int k_num;
     char *dummy;
     char *buffer;
     int next_field;

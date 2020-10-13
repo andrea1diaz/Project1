@@ -1,18 +1,23 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <extendible-hashing.h>
+#include <ui.h>
 
+#include <ncurses.h>
+#include <curses.h>
 #include <fmt/core.h>
-
 #include <iostream>
 #include <string>
 
+using namespace std;
+db::Hashing hs(4);
 struct HashingTest : public ::testing::Test
 {
+
 };
 
 TEST_F(HashingTest, First) {
-    db::Hashing hs (4);
+
     int result = hs.create((char *) "hash_file");
 
     if (result == 0) {
@@ -30,9 +35,16 @@ TEST_F(HashingTest, First) {
         result = hs.insert(keys[i], 100 + i);
 
         if (result == 0) return;
+        hs.print(std::cout);
 
-        //hs.print(std::cout);
     }
 
     return;
+};
+
+TEST_F(HashingTest, UI) {
+    hs.get_data();
+		//ui::database win(hs);
+		//win.init();
+
 }

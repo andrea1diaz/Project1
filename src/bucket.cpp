@@ -3,9 +3,13 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <ncurses.h>
+#include <curses.h>
+
 #include "extendible-hashing.cpp"
 
 namespace db {
+    int num_k = 0;
 bucket::bucket(db::Hashing &dir, int size) : num_keys (0), keys (0), rec_addr (0), dir(dir) {
     this->unique = unique != 0;
     bucket_addr = 0;
@@ -24,23 +28,8 @@ bucket::bucket(db::Hashing &dir, int size) : num_keys (0), keys (0), rec_addr (0
 
 int bucket::insert (char *key, int addr) {
     if (num_keys < max_keys) {
-        int ind = find(key);
-        int i = num_keys - 1;
+        simple_insert(key, addr);
 
-        if (unique && ind >= 0) return 0;
-
-        for (; i >= 0; --i) {
-            int eval = strcmp(key, keys[i]);
-
-            if (eval > 0) break;
-
-            keys[i + 1] = keys[i];
-            rec_addr[i + 1] = rec_addr[i];
-        }
-
-        keys[i + 1] = strdup(key);
-        rec_addr[i + 1] = addr;
-        num_keys ++;
         dir.store_bucket(this);
 
         return 1;
@@ -79,16 +68,8 @@ int bucket::simple_insert(const char *key, int addr) {
 
 
 int bucket::remove (const char *key) {
-    int ind = find(key);
+    simple_remove(key);
 
-    if (ind < 0) return 0;
-
-    for (int i = ind; i < num_keys; ++i) {
-        keys[i] = keys[i + 1];
-        rec_addr[i] = rec_addr[i + 1];
-    }
-
-    num_keys --;
     check_combine();
     dir.store_bucket(this);
 
@@ -254,6 +235,21 @@ std::ostream &bucket::print(std::ostream &stream) {
     return stream;
 }
 
+
+void bucket::get_data(WINDOW *wnd) {
+	mvwprintw(wnd, 2, 1, "%d", num_keys);
+	for (int i = 0; i < num_keys; ++i) {
+	  mvwprintw(wnd, i + 1, 1, keys[i]);
+	}
+	wrefresh(wnd);
+}
+
+    void bucket::get_data() {
+        for (int i = 0; i < num_keys; ++i) {
+           std::cout << keys[i] << "\n";
+        }
+    }
+
 bucket_buffer::bucket_buffer(int k_size, int size) {
     initialized = false;
     int field_max = 1 + 2 * size + 1;
@@ -269,6 +265,7 @@ bucket_buffer::bucket_buffer(int k_size, int size) {
     field_num = 0;
     this->k_size = k_size;
     this->k_max = size;
+    k_num = 0;
 
     add_field (sizeof(int));
 
@@ -294,10 +291,10 @@ void bucket_buffer::clear() {
         if (stream.eof()) return -1;
 
         int addr = stream.tellg();
-        unsigned short bff_size;
 
         clear();
 
+        unsigned short bff_size;
         stream.read((char *) &bff_size, sizeof(bff_size));
 
         if (!stream.good()) {
@@ -335,7 +332,7 @@ void bucket_buffer::clear() {
 
         if (!stream) return -1;
 
-        stream.write(buffer, buffer_size);
+        stream.write((char *)buffer, buffer_size);
 
         if (!stream.good()) return -1;
 
@@ -379,7 +376,9 @@ int bucket_buffer::pack(const bucket &bkt) {
         result = result && pack(dummy);
     }
 
-    return result;
+    if (result == -1) return -1;
+
+    return pack(&bkt.levels);
 }
 
 int bucket_buffer::pack(const void *field, int sz) {
@@ -417,7 +416,9 @@ int bucket_buffer::unpack(bucket &bkt) {
         result = result && unpack(dummy);
     }
 
-    return result;
+    if (result == -1) return -1;
+
+    return unpack(&bkt.levels);
 }
 
 int bucket_buffer::unpack(void *field, int sz) {
@@ -440,48 +441,52 @@ int bucket_buffer::unpack(void *field, int sz) {
 
     static const char *header_str_b = "BucketBuffer";
     static const int header_size_b = strlen(header_str_b);
-    const char *header_str = "Bucket";
-    const int header_size = strlen(header_str);
-
 
     int bucket_buffer::read_header(std::fstream &stream) {
-        int result;
-        char str[header_size + 1];
-        char str_s[header_size_b + 1];
+        char *str_s = new char [header_size_b + 1];
 
         stream.seekg(0, std::ios::beg);
         stream.read(str_s, header_size_b);
+        stream.tellg();
 
-        if (!stream.good()) result = -1;
+        if (!stream.good()) return -1;
 
-        if (strncmp(str_s, header_str_b, header_size_b) == 0) result = header_size_b;
-        else result = -1;
+        stream.read((char *) &buffer_size_max, sizeof(buffer_size_max));
 
-        if (!result) return 0;
+        if (!stream.good()) return -1;
 
-        stream.read(str, header_size);
+        if (strncmp(str_s, header_str_b, header_size_b) != 0) return -1;
 
-        if (!stream.good()) return false;
+        stream.read((char *) &field_num, sizeof(field_num));
 
-        if (strncmp(str, header_str, header_size) != 0) return 0;
+        if (!stream.good()) return -1;
+
+        field_size = new int[field_num];
+
+        for (int i = 0; i < field_num; ++i) {
+            stream.read((char *) &field_size[i], sizeof(field_size[i]));
+        }
 
         return stream.tellg();
     }
 
     int bucket_buffer::write_header(std::fstream &stream) {
-        int result;
 
-        stream.seekg(0, std::ios::beg);
+        stream.seekp(0, std::ios::beg);
         stream.write(header_str_b, header_size_b);
 
-        if (!stream.good()) result = -1;
-        else result = header_size_b;
+        if (!stream.good()) return -1;
 
-        if (!result) return 0;
+        stream.write((char *) &buffer_size_max, sizeof(buffer_size_max));
 
-        stream.write(header_str, header_size);
+        if (!stream.good()) return -1;
 
-        if (!stream.good()) return 0;
+        stream.write((char *) &field_num, sizeof(field_num));
+
+        for (int i = 0; i < field_num; ++i)
+            stream.write((char *) &field_size[i], sizeof(field_size[i]));
+
+        if (!stream.good()) return -1;
 
         return stream.tellp();
     }

@@ -26,6 +26,7 @@ namespace file {
 
         if (!file.good()) {
             file.close();
+            file.clear();
             return false;
         }
 
@@ -36,6 +37,7 @@ namespace file {
 
     int buffer_file_bucket::close() {
         file.close();
+        file.clear();
         return true;
     }
 

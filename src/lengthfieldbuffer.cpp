@@ -31,7 +31,7 @@ int length_field_buffer::read(std::fstream &stream) {
 
     stream.read((char *) &bff_size, sizeof(bff_size));
 
-    if (!stream.good()) {
+    if (stream.fail()) {
         stream.clear();
         return -1;
     }
@@ -42,7 +42,7 @@ int length_field_buffer::read(std::fstream &stream) {
 
     stream.read(buffer, buffer_size);
 
-    if (!stream.good()) {
+    if (stream.fail()) {
         stream.clear();
         return -1;
     }
@@ -88,9 +88,9 @@ int length_field_buffer::pack(const void *field, int size) {
     if (size >= 0) len = size;
     else len = strlen((char *) field);
 
-    next += len + sizeof(len);
+    next += (len + sizeof(len));
 
-    if (next > size) return -1;
+    if (next > this->size) return -1;
 
     memcpy(&buffer[start], &len, sizeof(len));
     memcpy(&buffer[start + sizeof(len)], field, len);
@@ -182,4 +182,5 @@ int length_field_buffer::write_header(std::fstream &stream) {
 
     return stream.tellp();
 }
+
 }

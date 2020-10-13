@@ -2,7 +2,11 @@ Extendible Hash & B+Tree disk implementation
 ==========================
 This project uses a  C++ template project with cmake.
 
+The all source files are in the `src/` directory and the test in the `test/` directory.
+
 The outputfiles of the indexing are placed in `cmake-build-debug/`
+
+For more information go to the [wiki page](https://github.com/andrea1diaz/Project1/wiki).
 
 Requirements
 -------------

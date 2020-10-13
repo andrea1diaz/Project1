@@ -5,7 +5,7 @@
 namespace file {
 class length_field_buffer {
 public:
-    length_field_buffer (int size = 1000);
+    length_field_buffer (int size = 1000000);
     void clear ();
     int read (std::fstream &stream);
     int dread (std::fstream &stream, int addr);

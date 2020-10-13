@@ -29,10 +29,11 @@ int buffer_file::open(char *filename) {
 }
 
 int buffer_file::create(char *filename) {
-    file.open ((const char *)filename, std::ios::out | std::ios::binary | std::ios::app);
+    file.open ((const char *)filename, std::ios::out | std::ios::binary);
 
     if (!file.good()) {
         file.close();
+        file.clear();
         return false;
     }
 
@@ -43,6 +44,7 @@ int buffer_file::create(char *filename) {
 
 int buffer_file::close() {
     file.close();
+    file.clear();
     return true;
 }
 

@@ -2,8 +2,11 @@
 #include "bucket.h"
 
 #include <iostream>
+#include <vector>
 #include <string.h>
 #include <sstream>
+#include <ncurses.h>
+#include <curses.h>
 
 namespace db {
 
@@ -12,6 +15,7 @@ Hashing::Hashing (int size) {
     num_entries = 1;
     bucket_addr = new int [num_entries];
     max_keys = size;
+    file_name = new char;
     dir_buffer = new file::length_field_buffer;
     dir_file = new file::buffer_file(*dir_buffer);
     current_bucket = new db::bucket(*this, size);
@@ -41,6 +45,8 @@ int Hashing::open(char *name) {
 
     make_names(name, dir_name, bucket_name);
 
+    file_name = dir_name;
+
     result = dir_file->open(dir_name);
 
     if (!result) return 0;
@@ -67,6 +73,8 @@ int Hashing::create(char *name) {
 
     if (!result) return 0;
 
+    file_name = dir_name;
+    indexed_files.push_back(name);
     result = bucket_file->create(bucket_name);
 
     if (!result) return 0;
@@ -111,6 +119,22 @@ int Hashing::search(char *key) {
     return current_bucket->search(key);
 }
 
+int Hashing::get_indexed_files_names () {
+    if (indexed_files.size() == 0) return -1;
+
+    for (auto i : indexed_files) {
+        std::cout << i << "\n";
+    }
+
+    return 1;
+}
+
+std::vector<char *> Hashing::get_indexed_files() {
+    if (indexed_files.size() == 0) return {};
+
+    return indexed_files;
+}
+
 int Hashing::hash (char *key) {
     int sum = 0;
     int  len = strlen(key);
@@ -138,6 +162,22 @@ std::ostream &Hashing::print(std::ostream &stream) {
 
     return stream;
 }
+
+void Hashing::get_data (WINDOW *wnd) {
+		for (int i = 0; i < num_entries; ++i) {
+			load_bucket(print_bucket, bucket_addr[i]);
+			print_bucket->get_data(wnd);
+		}
+}
+
+    void Hashing::get_data () {
+        for (int i = 0; i < num_entries; ++i) {
+            int tmp = bucket_addr[i];
+            load_bucket(print_bucket, bucket_addr[i]);
+            print_bucket->get_data();
+        }
+    }
+
 
 int Hashing::make_addr (char *key, int levels) {
     int addr = 0;

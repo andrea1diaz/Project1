@@ -24,7 +24,6 @@ public:
     int insert (char *key, int addr);
     int remove (char *key);
     int search (char *key);
-    int get_indexed_files_names ();
     std::vector<char *> get_indexed_files ();
     int make_addr (char *key, int levels);
     int hash (char *key);

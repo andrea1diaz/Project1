@@ -122,15 +122,6 @@ int Hashing::search(char *key) {
     return current_bucket->search(key);
 }
 
-int Hashing::get_indexed_files_names () {
-    if (indexed_files.size() == 0) return -1;
-
-    for (auto i : indexed_files) {
-        std::cout << i << "\n";
-    }
-
-    return 1;
-}
 
 std::vector<char *> Hashing::get_indexed_files() {
     if (indexed_files.size() == 0) return {};
@@ -140,7 +131,7 @@ std::vector<char *> Hashing::get_indexed_files() {
 
 int Hashing::hash (char *key) {
     int sum = 0;
-    int  len = strlen(key);
+    int len = strlen(key);
 
     if (len % 2 == 1) len ++;
 
@@ -296,7 +287,7 @@ int Hashing::pack() const {
 
     dir_buffer->clear();
 
-    pack_size =dir_buffer->pack(&levels, sizeof(int));
+    pack_size = dir_buffer->pack(&levels, sizeof(int));
 
     if (pack_size == -1) return -1;
 

@@ -31,7 +31,6 @@ protected:
     int buffer_size_max;
     int k_max;
     int k_size;
-    int k_num;
     char *dummy;
     char *buffer;
     int next_field;

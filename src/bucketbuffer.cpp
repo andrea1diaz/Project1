@@ -19,7 +19,6 @@ bucket_buffer::bucket_buffer(int k_size, int size) {
     field_num = 0;
     this->k_size = k_size;
     this->k_max = size;
-    k_num = 0;
 
     add_field (sizeof(int));
 
@@ -41,65 +40,65 @@ void bucket_buffer::clear() {
 }
 
 
-    int bucket_buffer::read(std::fstream &stream) {
-        if (stream.eof()) return -1;
+int bucket_buffer::read(std::fstream &stream) {
+		if (stream.eof()) return -1;
 
-        int addr = stream.tellg();
+		int addr = stream.tellg();
 
-        clear();
+		clear();
 
-        unsigned short bff_size;
-        stream.read((char *) &bff_size, sizeof(bff_size));
+		unsigned short bff_size;
+		stream.read((char *) &bff_size, sizeof(bff_size));
 
-        if (!stream.good()) {
-            stream.clear();
-            return -1;
-        }
+		if (!stream.good()) {
+				stream.clear();
+				return -1;
+		}
 
-        buffer_size = bff_size;
+		buffer_size = bff_size;
 
-        if (buffer_size > buffer_size_max) return -1;
+		if (buffer_size > buffer_size_max) return -1;
 
-        stream.read(buffer, buffer_size);
+		stream.read(buffer, buffer_size);
 
-        if (!stream.good()) {
-            stream.clear();
-            return -1;
-        }
+		if (!stream.good()) {
+				stream.clear();
+				return -1;
+		}
 
-        return addr;
-    }
+		return addr;
+}
 
-    int bucket_buffer::dread(std::fstream &stream, int addr) {
-        stream.seekg(addr, std::ios::beg);
+int bucket_buffer::dread(std::fstream &stream, int addr) {
+		stream.seekg(addr, std::ios::beg);
 
-        if (stream.tellp() != addr) return -1;
+		if (stream.tellp() != addr) return -1;
 
-        return read(stream);
-    }
+		return read(stream);
+}
 
-    int bucket_buffer::write(std::fstream &stream) {
-        int addr = stream.tellp();
-        unsigned short bff_size = buffer_size;
+int bucket_buffer::write(std::fstream &stream) {
+		int addr = stream.tellp();
+		unsigned short bff_size = buffer_size;
 
-        stream.write((char *) &bff_size, sizeof(bff_size));
+		stream.write((char *) &bff_size, sizeof(bff_size));
 
-        if (!stream) return -1;
+		if (!stream) return -1;
 
-        stream.write((char *)buffer, buffer_size);
+		stream.write((char *)buffer, buffer_size);
 
-        if (!stream.good()) return -1;
+		if (!stream.good()) return -1;
 
-        return addr;
-    }
+		return addr;
+}
 
-    int bucket_buffer::dwrite(std::fstream &stream, int addr) {
-        stream.seekg(addr, std::ios::beg);
+int bucket_buffer::dwrite(std::fstream &stream, int addr) {
+		stream.seekg(addr, std::ios::beg);
 
-        if (stream.tellp() != addr) return -1;
+		if (stream.tellp() != addr) return -1;
 
-        return write(stream);
-    }
+		return write(stream);
+}
 
 int bucket_buffer::add_field(int field_size) {
     initialized = 1;
@@ -193,55 +192,56 @@ int bucket_buffer::unpack(void *field, int sz) {
     return pack_size;
 }
 
-    static const char *header_str_b = "BucketBuffer";
-    static const int header_size_b = strlen(header_str_b);
+static const char *header_str_b = "BucketBuffer";
+static const int header_size_b = strlen(header_str_b);
 
-    int bucket_buffer::read_header(std::fstream &stream) {
-        char *str_s = new char [header_size_b + 1];
+int bucket_buffer::read_header(std::fstream &stream) {
+		char *str_s = new char [header_size_b + 1];
 
-        stream.seekg(0, std::ios::beg);
-        stream.read(str_s, header_size_b);
-        stream.tellg();
+		stream.seekg(0, std::ios::beg);
+		stream.read(str_s, header_size_b);
+		stream.tellg();
 
-        if (!stream.good()) return -1;
+		if (!stream.good()) return -1;
 
-        stream.read((char *) &buffer_size_max, sizeof(buffer_size_max));
+		stream.read((char *) &buffer_size_max, sizeof(buffer_size_max));
 
-        if (!stream.good()) return -1;
+		if (!stream.good()) return -1;
 
-        if (strncmp(str_s, header_str_b, header_size_b) != 0) return -1;
+		if (strncmp(str_s, header_str_b, header_size_b) != 0) return -1;
 
-        stream.read((char *) &field_num, sizeof(field_num));
+		stream.read((char *) &field_num, sizeof(field_num));
 
-        if (!stream.good()) return -1;
+		if (!stream.good()) return -1;
 
-        field_size = new int[field_num];
+		field_size = new int[field_num];
 
-        for (int i = 0; i < field_num; ++i) {
-            stream.read((char *) &field_size[i], sizeof(field_size[i]));
-        }
+		for (int i = 0; i < field_num; ++i) {
+				stream.read((char *) &field_size[i], sizeof(field_size[i]));
+		}
 
-        return stream.tellg();
-    }
+		return stream.tellg();
+}
 
-    int bucket_buffer::write_header(std::fstream &stream) {
+int bucket_buffer::write_header(std::fstream &stream) {
 
-        stream.seekp(0, std::ios::beg);
-        stream.write(header_str_b, header_size_b);
+		stream.seekp(0, std::ios::beg);
+		stream.write(header_str_b, header_size_b);
 
-        if (!stream.good()) return -1;
+		if (!stream.good()) return -1;
 
-        stream.write((char *) &buffer_size_max, sizeof(buffer_size_max));
+		stream.write((char *) &buffer_size_max, sizeof(buffer_size_max));
 
-        if (!stream.good()) return -1;
+		if (!stream.good()) return -1;
 
-        stream.write((char *) &field_num, sizeof(field_num));
+		stream.write((char *) &field_num, sizeof(field_num));
 
-        for (int i = 0; i < field_num; ++i)
-            stream.write((char *) &field_size[i], sizeof(field_size[i]));
+		for (int i = 0; i < field_num; ++i)
+				stream.write((char *) &field_size[i], sizeof(field_size[i]));
 
-        if (!stream.good()) return -1;
+		if (!stream.good()) return -1;
 
-        return stream.tellp();
-    }
+		return stream.tellp();
+}
+
 }

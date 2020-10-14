@@ -22,15 +22,6 @@ public:
     write(reinterpret_cast<const char *>(&reg), sizeof(reg));
   }
 
-  // template<class Register>
-  // long save(Register &reg)
-  // {
-  //     clear();
-  //     seekp(0, std::ios::end);
-  //     write(reinterpret_cast<const char *> (&reg), sizeof(reg));
-
-  //     return page_id_count - 1;
-  // }
 
   template <class Register> bool recover(const long &n, Register &reg) {
     clear();

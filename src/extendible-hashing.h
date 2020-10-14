@@ -28,8 +28,7 @@ public:
     int make_addr (char *key, int levels);
     int hash (char *key);
     std::ostream &print (std::ostream &stream);
-		void get_data (WINDOW *wnd);
-    void get_data ();
+
 
 protected:
     int max_keys;

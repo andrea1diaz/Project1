@@ -10,7 +10,7 @@ namespace disk {
 	enum state {
     BT_OVERFLOW,
     BT_UNDERFLOW,
-    OK,
+    OKK,
   };
 
 template <class T, int BTREE_ORDER = 3> class btree {
@@ -176,7 +176,7 @@ public:
   }
 
   void write_node (long page_id, node n) { pm->save (page_id, n); }
-	void delete_node (long page_id, node n) { pm->erase (page_id, n); } 
+  void delete_node (long page_id, node n) { pm->erase (page_id, n); }
 
   void insert(const T &value) {
     node root = read_node(header.root_id);
@@ -205,7 +205,7 @@ public:
       ptr.insert_in_node(index, value);
       write_node(ptr.page_id, ptr);
     }
-    return ptr.is_overflow() ? BT_OVERFLOW : OK;
+    return ptr.is_overflow() ? BT_OVERFLOW : OKK;
 	}
 
 	void erase (const T &value) {
@@ -242,7 +242,7 @@ public:
 			write_node (ptr.page_id, ptr);
 		}
 
-		return ptr.is_underflow() ? BT_UNDERFLOW : OK;
+		return ptr.is_underflow() ? BT_UNDERFLOW : OKK;
 	}
 
 

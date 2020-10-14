@@ -1,13 +1,12 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <extendible-hashing.h>
-#include <ui.h>
 
-#include <ncurses.h>
-#include <curses.h>
 #include <fmt/core.h>
 #include <iostream>
 #include <string>
+
+#include <DataBase.h>
 
 using namespace std;
 db::Hashing hs(4);
@@ -42,9 +41,8 @@ TEST_F(HashingTest, First) {
     return;
 };
 
-TEST_F(HashingTest, UI) {
-    hs.get_data();
-		//ui::database win(hs);
-		//win.init();
 
-}
+
+
+
+

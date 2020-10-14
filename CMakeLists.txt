@@ -124,14 +124,15 @@ blazingdb_artifact (
         SOURCES
           src/pagemanager.cpp
           src/bucket.cpp
-					src/bucketbuffer.cpp
+          src/bucketbuffer.cpp
           src/bufferfile.cpp
           src/bufferfilebucket.cpp
           src/lengthfieldbuffer.cpp
-					src/ui.cpp
+          src/DataBase.cpp
 
         TESTS
           tests/btree_test.cpp
           tests/hash_test.cpp
+          tests/database_test.cpp
 
 )

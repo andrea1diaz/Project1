@@ -157,21 +157,6 @@ std::ostream &Hashing::print(std::ostream &stream) {
     return stream;
 }
 
-void Hashing::get_data (WINDOW *wnd) {
-		for (int i = 0; i < num_entries; ++i) {
-			load_bucket(print_bucket, bucket_addr[i]);
-			print_bucket->get_data(wnd);
-		}
-}
-
-    void Hashing::get_data () {
-        for (int i = 0; i < num_entries; ++i) {
-            int tmp = bucket_addr[i];
-            load_bucket(print_bucket, bucket_addr[i]);
-            print_bucket->get_data();
-        }
-    }
-
 
 int Hashing::make_addr (char *key, int levels) {
     int addr = 0;

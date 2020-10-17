@@ -4,6 +4,8 @@ This project uses a  C++ template project with cmake.
 
 The all source files are in the `src/` directory and the test in the `test/` directory.
 
+For the presentation video: https://drive.google.com/file/d/1GYy06AVErVvyhdzH88fBPz1SEMaHTeSK/view?usp=sharing
+
 The outputfiles of the indexing are placed in `cmake-build-debug/`
 
 For more information go to the [wiki page](https://github.com/andrea1diaz/Project1/wiki).
